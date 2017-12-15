@@ -1,0 +1,223 @@
+E:\OCTxP-Performance-Test\FinancialTransactions_100Treads\FinancialTransactions_100T.jtl
+----------------------------------------------------------------------------------------------------
+E:\OCTxP-Performance-Test\Account_100Treads\CreateNewAccount-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\FindAccount-100T.jtl         ---> AccountMicroservice.csv
+E:\OCTxP-Performance-Test\Account_100Treads\RetrieveAccount-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\RetrieveAccountBalance-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\RetrieveAccountEntries-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\CreateNewAccountEntry-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\UpdateAccountEntry-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\UpdateAccount-100T.jtl
+E:\OCTxP-Performance-Test\Account_100Treads\UpdateAccountEntry-100T.jtl
+
+jmeter -g E:\OCTxP-Performance-Test\Account_100Treads\CreateNewAccount-100T01.jtl -o E:\OCTxP-Performance-Test\Account_100Treads\TestGraph-Reports
+
+-------------------------------------------------------------------------
+E:\OCTxP-Performance-Test\CashWithdrawal_100T\CashWithdrawal-100T.jtl
+---------------------------------------------------------------------------
+E:\OCTxP-Performance-Test\CashBoxMicroservice_100T\CashBoxMicroService-100T.jtl
+
+-----------------------------------------------------------------------------
+
+WARN  [main] 2017-11-24 15:22:55,919 CLibrary.java:163 - Unable to lock JVM memory (ENOMEM). This can result in part of the JVM being swapped out, especially with mmapped I/O enabled. Increase RLIMIT_MEMLOCK or run Cassandra as root.
+
+WARN  [main] 2017-11-24 15:22:55,919 StartupChecks.java:123 - jemalloc shared library could not be preloaded to speed up memory allocations
+
+WARN  [main] 2017-11-24 15:22:55,919 StartupChecks.java:156 - JMX is not enabled to receive remote connections. Please see cassandra-env.sh for more info.
+WARN  [main] 2017-11-24 15:22:55,919 StartupChecks.java:193 - OpenJDK is not recommended. Please upgrade to the newest Oracle Java release
+
+INFO  [main] 2017-11-24 15:22:55,920 SigarLibrary.java:44 - Initializing SIGAR library
+
+WARN  [main] 2017-11-24 15:22:55,977 SigarLibrary.java:174 - Cassandra server running in degraded mode. Is swap disabled? : false,  Address space adequate? : true,  nofile limit adequate? : true, nproc limit adequate? : true 
+
+[root@ca-node1 conf]# ulimit -l
+64
+[root@ca-node1 conf]#
+
+
+[root@ca-node1 conf]# cat /etc/security/limits.conf | grep -vP '^#'  
+omsagent  hard  nproc  75
+
+[root@ca-node1 conf]#
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+You have to define limits for the user.
+Here is an example for the user cassandra:
+
+# cat /etc/security/limits.d/cassandra.conf
+cassandra - memlock unlimited
+cassandra - nofile 100000
+
+----------------------------------------------------------------------------------------------------------------------------------
+# sysctl -p
+# vi /etc/sysctl.conf
+   fs.file-max = 100000
+# cat /proc/sys/fs/file-max
+# sysctl fs.file-max
+# cat /etc/security/limits.conf
+
+[root@ca-node1 /]# ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 111350
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 1024
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 111350
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+[root@ca-node1 /]#
+
+
+For example, to set unlimited space for all users:
+* soft memlock unlimited
+* hard memlock unlimited
+
+To set the limits for all users to 256MB:
+* soft memlock 262144
+* hard memlock 262144
+
+sudo sysctl -w vm.max_map_count=262144
+sudo vi /proc/sys/vm/max_map_count
+ls -la /proc/sys/vm/ | grep max_map_count
+sysctl -p
+
+Configure Software RAID on Linux:
+---------------------------------
+02/02/2017 5 minutes to read Contributors  Rick Claus  Ralph Squillace
+It's a common scenario to use software RAID on Linux virtual machines in Azure to present multiple attached data disks as a single RAID device. 
+Typically this can be used to improve performance and allow for improved throughput compared to using just a single disk.
+
+Attaching data disks:
+---------------------
+Two or more empty data disks are needed to configure a RAID device. 
+The primary reason for creating a RAID device is to improve performance of your disk IO. Based on your IO needs, you can choose to attach disks that are stored in our Standard Storage, with up to 500 IO/ps per disk or our Premium storage with up to 5000 IO/ps per disk. 
+This article does not go into detail on how to provision and attach data disks to a Linux virtual machine. See the Microsoft Azure article attach a disk for detailed instructions on how to attach an empty data disk to a Linux virtual machine on Azure.
+
+************************************
+******* CentOS & Oracle Linux ******
+************************************
+
+Step-1: Install the mdadm utility
+  # sudo yum install mdadm
+
+Step-2: Create the disk partitions
+  # sudo fdisk /dev/sdc
+  # sudo fdisk /dev/sdd
+  # sudo fdisk /dev/sde
+  # sudo fdisk /dev/sdf
+
+Step-2: Create the RAID array
+   ***The following example will "stripe" (RAID level 0) three partitions located on three separate data disks (sdc1, sdd1, sde1). 
+   ***After running this command a new RAID device called /dev/md127 is created. Also note that if these data disks we previously part of another defunct RAID array it may be necessary to add the --force parameter to the mdadm command:
+  
+   # sudo mdadm --create /dev/md127 --level 0 --raid-devices 4 /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1
+
+Output:
+[root@ca-node0 conf]# sudo mdadm --create /dev/md127 --level 0 --raid-devices 4  /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1
+mdadm: /dev/sdc1 appears to contain an ext2fs file system
+       size=25164800K  mtime=Tue Nov 28 13:15:12 2017
+mdadm: /dev/sdd1 appears to contain an ext2fs file system
+       size=26213376K  mtime=Wed Nov 29 12:35:02 2017
+mdadm: /dev/sde1 appears to contain an ext2fs file system
+       size=26213376K  mtime=Wed Nov 29 12:35:14 2017
+mdadm: /dev/sdf1 appears to contain an ext2fs file system
+       size=26213376K  mtime=Wed Nov 29 12:35:24 2017
+Continue creating array? Y
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md127 started.
+[root@ca-node0 conf]#
+
+Step-3: Create the file system on the new RAID device
+    # sudo mkfs -t ext4 /dev/md127
+ 
+Step-4: Add the new file system to /etc/fstab
+    # dmesg | grep SCSI
+    # blkid
+    # vi /etc/fstab
+
+    Node-1: /dev/md127: UUID="e8804613-0a0c-4736-ab9e-99838037c220" TYPE="ext4"
+    Node-2: /dev/md127: UUID="c01a667b-93fd-4da9-8b44-636474a56096" TYPE="ext4"
+    Node-3: /dev/md127: UUID="3dbfa6c7-3c89-4568-b22b-5601620d0555" TYPE="ext4"
+
+    Node-1: UUID=e8804613-0a0c-4736-ab9e-99838037c220  /ca-data0  ext4  defaults  0  2
+    Node-2: UUID=c01a667b-93fd-4da9-8b44-636474a56096  /ca-data1  ext4  defaults  0  2
+    Node-3: UUID=3dbfa6c7-3c89-4568-b22b-5601620d0555  /ca-data2  ext4  defaults  0  2
+
+    Then, save and close /etc/fstab.
+
+Step-5: Test that the /etc/fstab entry is correct:
+    # mkdir /ca-data0
+    # chmod 755 /ca-data0
+    # chown cassandra:cassandra /ca-data0
+    # sudo mount -a
+
+Output:
+[root@ca-node2 var]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs         14G     0   14G   0% /dev
+tmpfs            14G     0   14G   0% /dev/shm
+tmpfs            14G   65M   14G   1% /run
+tmpfs            14G     0   14G   0% /sys/fs/cgroup
+/dev/sda2        30G  3.3G   25G  12% /
+/dev/sda1       497M  176M  321M  36% /boot
+/dev/sdb1        55G   53M   53G   1% /mnt/resource
+tmpfs           2.8G     0  2.8G   0% /run/user/1000
+/dev/md127       98G   61M   93G   1% /ca-data2
+[root@ca-node2 var]#
+
+
+
+service:jmx:rmi:///jndi/rmi://:7199/jmxrmi
+service:jmx:rmi:///jndi/rmi://153.78.22.24:7199/jmxrmi
+
+
+
+WARN  [main] 2017-12-05 15:47:09,329 DatabaseDescriptor.java:470 - Small commitlog volume detected at /var/lib/cassandra/commitlog; setting commitlog_total_space_in_mb to 7554.  You can override this in cassandra.yaml
+WARN  [main] 2017-12-05 15:47:09,329 DatabaseDescriptor.java:497 - Small cdc volume detected at /cdc_raw; setting cdc_total_space_in_mb to 3777.  You can override this in cassandra.yaml
+
+WARN  [main] 2017-12-05 15:47:09,745 StartupChecks.java:133 - jemalloc shared library could not be preloaded to speed up memory allocations
+INFO  [main] 2017-12-05 15:47:09,745 StartupChecks.java:173 - JMX is enabled to receive remote connections on port: 7199
+INFO  [main] 2017-12-05 15:47:09,746 SigarLibrary.java:44 - Initializing SIGAR library
+INFO  [main] 2017-12-05 15:47:09,755 SigarLibrary.java:180 - Checked OS settings and found them configured for optimal performance.
+
+WARN  [OptionalTasks:1] 2017-12-05 15:47:24,257 CassandraRoleManager.java:360 - CassandraRoleManager skipped default role setup: some nodes were not ready
+
+WARN  [GossipTasks:1] 2017-12-05 15:47:25,791 FailureDetector.java:288 - Not marking nodes down due to local pause of 12370289165 > 5000000000
+
+
+
+DEBUG [MessagingService-Outgoing-/153.78.22.26-Gossip] 2017-12-05 15:47:24,298 OutboundTcpConnection.java:545 - Unable to connect to /153.78.22.26
+java.net.ConnectException: Connection refused
+
+Default commitlog_total_space_in_mb to 4G
+
+Changed to a 8G = 8192
+
+cdc_total_space_in_mb
+
+memtable_flush_writers: 2
+
+Changed to 4 cpus
+
+# memtable_cleanup_threshold defaults to 1 / (memtable_flush_writers + 1)
+# memtable_cleanup_threshold: 0.11
+memtable_cleanup_threshold: 0.
+Uncommeted
+
+
+INFO  [main] 2017-12-06 10:33:54,488 YamlConfigurationLoader.java:89 - Configuration location: file:/etc/cassandra/default.conf/cassandra.yaml
+ERROR [main] 2017-12-06 10:33:54,555 CassandraDaemon.java:706 - Exception encountered during startup: Invalid yaml: file:/etc/cassandra/default.conf/cassandra.yaml
+ Error: while parsing a block mapping; expected <block end>, but found BlockMappingStart;  in 'reader', line 492, column 3:
+      memtable_cleanup_threshold: 0.11
+      ^
+
+

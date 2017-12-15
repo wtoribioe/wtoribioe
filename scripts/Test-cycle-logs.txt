@@ -1,0 +1,166 @@
+[root@kube-node0 scripts]# ./step1a-configure-scripts.sh kube-eagle65
+Setting up scripts for kube-eagle65 namespace...
+Setting kube-system namespace variables...
+Setting template variables...
+SERVICE_REGISTRY_PORT=8101
+mv: cannot stat â../kube-eagle65â: No such file or directory
+Updating variables in ../fluentd-to-elasticsearch.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-system.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../pause.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../registry.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-scripts/verify-elasticsearch-curator.sh...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-scripts/verify-service-registry.sh...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/elasticsearch-curator.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/elasticsearch-logging-volume.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/elasticsearch-logging.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/httpd-proxy.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kibana-logging.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-dashboard.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-namespace.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/service-registry.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/skydns-volume.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/skydns.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-services/elasticsearch-logging.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-services/httpd-proxy.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-services/kibana-logging.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-services/kube-dashboard.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-services/service-registry.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Updating variables in ../kube-eagle65/kube-eagle65-services/skydns.yml...
+Configuring NFS for multi-node cluster.  Ensure folders have been created on NFS!
+Setting up scripts for kube-eagle65 namespace...
+Setting template variables...
+Updating variables in ../kube-eagle65/elasticsearch-curator.yml...
+Updating variables in ../kube-eagle65/elasticsearch-logging-volume.yml...
+Updating variables in ../kube-eagle65/elasticsearch-logging.yml...
+Updating variables in ../kube-eagle65/httpd-proxy.yml...
+Updating variables in ../kube-eagle65/kibana-logging.yml...
+Updating variables in ../kube-eagle65/kube-dashboard.yml...
+Updating variables in ../kube-eagle65/kube-namespace.yml...
+Updating variables in ../kube-eagle65/service-registry.yml...
+Updating variables in ../kube-eagle65/skydns-volume.yml...
+Updating variables in ../kube-eagle65/skydns.yml...
+Setting kube-system namespace variables...
+Setting template variables...
+Not updating /etc/hosts as kube-master was found inside.
+[root@kube-node0 scripts]#
+
+[root@kube-node0 kube-eagle65]# kubectl get svc --all-namespaces
+NAMESPACE      NAME                    CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+default        kubernetes              10.254.0.1       <none>        443/TCP         5d
+kube-eagle65   tx-httpd-proxy          10.254.35.92     <nodes>       8088:8116/TCP   35m
+kube-eagle65   tx-service-registry     10.254.249.119   <nodes>       8761:8101/TCP   35m
+kube-system    elasticsearch-logging   10.254.88.194    <nodes>       9200:8120/TCP   28m
+kube-system    kibana-logging          10.254.49.152    <nodes>       5601:8122/TCP   28m
+kube-system    kube-dns                10.254.0.10      <none>        53/UDP,53/TCP   28m
+[root@kube-node0 kube-eagle65]# pwd
+/home/admin01/tx-assembly-master/kube-eagle65
+[root@kube-node0 kube-eagle65]# kubectl get svc --all-namespaces
+NAMESPACE      NAME                    CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+default        kubernetes              10.254.0.1       <none>        443/TCP         5d
+kube-eagle65   tx-httpd-proxy          10.254.35.92     <nodes>       8088:8116/TCP   36m
+kube-eagle65   tx-service-registry     10.254.249.119   <nodes>       8761:8101/TCP   36m
+kube-system    elasticsearch-logging   10.254.88.194    <nodes>       9200:8120/TCP   29m
+kube-system    kibana-logging          10.254.49.152    <nodes>       5601:8122/TCP   29m
+kube-system    kube-dns                10.254.0.10      <none>        53/UDP,53/TCP   29m
+[root@kube-node0 kube-eagle65]# kubectl get pods --all-namespaces -o wide -a
+NAMESPACE      NAME                                                READY     STATUS    RESTARTS   AGE       IP          NODE
+kube-eagle65   httpd-proxy-rc-2962540643-84679                     0/1       Running   0          2m        10.1.23.5   kube-node2
+kube-eagle65   service-registry-rc-3962027200-sdjdp                1/1       Running   0          37m       10.1.30.4   kube-node1
+kube-system    elasticsearch-curator-controller-dfs30              1/1       Running   0          30m       10.1.23.4   kube-node2
+kube-system    elasticsearch-logging-controller-2655774656-5hwdb   1/1       Running   0          30m       10.1.23.3   kube-node2
+kube-system    fluentd-elasticsearch-kube-node0                    1/1       Running   1          32m       10.1.82.2   kube-node0
+kube-system    fluentd-elasticsearch-kube-node1                    1/1       Running   1          32m       10.1.30.2   kube-node1
+kube-system    fluentd-elasticsearch-kube-node2                    1/1       Running   1          32m       10.1.23.2   kube-node2
+kube-system    kibana-logging-controller-3991788229-j3w1q          1/1       Running   0          30m       10.1.30.3   kube-node1
+kube-system    kube-dns-v10-2120811250-6zzx1                       3/3       Running   0          30m       10.1.82.3   kube-node0
+kube-system    kubernetes-dashboard-203896329-d693p                1/1       Running   0          2m        10.1.30.5   kube-node1
+[root@kube-node0 kube-eagle65]# pwd
+/home/admin01/tx-assembly-master/kube-eagle65
+[root@kube-node0 kube-eagle65]# pwd
+/home/admin01/tx-assembly-master/kube-eagle65
+[root@kube-node0 kube-eagle65]# cd ..
+[root@kube-node0 tx-assembly-master]# cd /home/admin01/tx-assembly-master/kube-eagle65
+[root@kube-node0 kube-eagle65]# ls -l
+total 40
+-rw-r--r-- 1 root root 1187 Sep  7 10:33 elasticsearch-curator.yml
+-rw-r--r-- 1 root root  675 Sep  7 10:33 elasticsearch-logging-volume.yml
+-rw-r--r-- 1 root root 2144 Sep  7 10:33 elasticsearch-logging.yml
+-rw-r--r-- 1 root root 1319 Sep  7 10:33 httpd-proxy.yml
+-rw-r--r-- 1 root root 1466 Sep  7 10:33 kibana-logging.yml
+-rw-r--r-- 1 root root  945 Sep  7 10:33 kube-dashboard.yml
+drwxr-xr-x 1 root root  114 Sep  7 10:33 kube-eagle65-scripts
+drwxr-xr-x 1 root root  212 Sep  7 10:33 kube-eagle65-services
+-rw-r--r-- 1 root root   61 Sep  7 10:33 kube-namespace.yml
+-rw-r--r-- 1 root root  994 Sep  7 10:33 service-registry.yml
+-rw-r--r-- 1 root root  648 Sep  7 10:33 skydns-volume.yml
+-rw-r--r-- 1 root root 2866 Sep  7 10:33 skydns.yml
+[root@kube-node0 kube-eagle65]# cd kube-eagle65-services
+[root@kube-node0 kube-eagle65-services]# ls -l
+total 24
+-rw-r--r-- 1 root root 401 Sep  7 10:33 elasticsearch-logging.yml
+-rw-r--r-- 1 root root 337 Sep  7 10:33 httpd-proxy.yml
+-rw-r--r-- 1 root root 375 Sep  7 10:33 kibana-logging.yml
+-rw-r--r-- 1 root root 370 Sep  7 10:33 kube-dashboard.yml
+-rw-r--r-- 1 root root 300 Sep  7 10:33 service-registry.yml
+-rw-r--r-- 1 root root 412 Sep  7 10:33 skydns.yml
+[root@kube-node0 kube-eagle65-services]# kubectl -create kube-dashboard.yml
+Error: unknown command "kube-dashboard.yml" for "kubectl"
+Run 'kubectl --help' for usage.
+[root@kube-node0 kube-eagle65-services]# kubectl create -f kube-dashboard.yml
+service "kubernetes-dashboard" created
+[root@kube-node0 kube-eagle65-services]# kubectl get svc --all-namespaces
+NAMESPACE      NAME                    CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+default        kubernetes              10.254.0.1       <none>        443/TCP         5d
+kube-eagle65   tx-httpd-proxy          10.254.35.92     <nodes>       8088:8116/TCP   37m
+kube-eagle65   tx-service-registry     10.254.249.119   <nodes>       8761:8101/TCP   37m
+kube-system    elasticsearch-logging   10.254.88.194    <nodes>       9200:8120/TCP   31m
+kube-system    kibana-logging          10.254.49.152    <nodes>       5601:8122/TCP   31m
+kube-system    kube-dns                10.254.0.10      <none>        53/UDP,53/TCP   31m
+kube-system    kubernetes-dashboard    10.254.186.240   <none>        80/TCP          10s
+[root@kube-node0 kube-eagle65-services]# ls -l
+total 24
+-rw-r--r-- 1 root root 401 Sep  7 10:33 elasticsearch-logging.yml
+-rw-r--r-- 1 root root 337 Sep  7 10:33 httpd-proxy.yml
+-rw-r--r-- 1 root root 375 Sep  7 10:33 kibana-logging.yml
+-rw-r--r-- 1 root root 370 Sep  7 10:33 kube-dashboard.yml
+-rw-r--r-- 1 root root 300 Sep  7 10:33 service-registry.yml
+-rw-r--r-- 1 root root 412 Sep  7 10:33 skydns.yml
+[root@kube-node0 kube-eagle65-services]# cd ..
+[root@kube-node0 kube-eagle65]# ls -l
+total 40
+-rw-r--r-- 1 root root 1187 Sep  7 10:33 elasticsearch-curator.yml
+-rw-r--r-- 1 root root  675 Sep  7 10:33 elasticsearch-logging-volume.yml
+-rw-r--r-- 1 root root 2144 Sep  7 10:33 elasticsearch-logging.yml
+-rw-r--r-- 1 root root 1319 Sep  7 10:33 httpd-proxy.yml
+-rw-r--r-- 1 root root 1466 Sep  7 10:33 kibana-logging.yml
+-rw-r--r-- 1 root root  945 Sep  7 10:33 kube-dashboard.yml
+drwxr-xr-x 1 root root  114 Sep  7 10:33 kube-eagle65-scripts
+drwxr-xr-x 1 root root  212 Sep  7 10:33 kube-eagle65-services
+-rw-r--r-- 1 root root   61 Sep  7 10:33 kube-namespace.yml
+-rw-r--r-- 1 root root  994 Sep  7 10:33 service-registry.yml
+-rw-r--r-- 1 root root  648 Sep  7 10:33 skydns-volume.yml
+-rw-r--r-- 1 root root 2866 Sep  7 10:33 skydns.yml
+[root@kube-node0 kube-eagle65]# 
+
+

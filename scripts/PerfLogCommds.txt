@@ -1,0 +1,42 @@
+
+WARN  [main] 2017-12-05 15:47:09,329 DatabaseDescriptor.java:470 - Small commitlog volume detected at /var/lib/cassandra/commitlog; setting commitlog_total_space_in_mb to 7554.  You can override this in cassandra.yaml
+WARN  [main] 2017-12-05 15:47:09,329 DatabaseDescriptor.java:497 - Small cdc volume detected at /cdc_raw; setting cdc_total_space_in_mb to 3777.  You can override this in cassandra.yaml
+
+WARN  [main] 2017-12-05 15:47:09,745 StartupChecks.java:133 - jemalloc shared library could not be preloaded to speed up memory allocations
+INFO  [main] 2017-12-05 15:47:09,745 StartupChecks.java:173 - JMX is enabled to receive remote connections on port: 7199
+INFO  [main] 2017-12-05 15:47:09,746 SigarLibrary.java:44 - Initializing SIGAR library
+INFO  [main] 2017-12-05 15:47:09,755 SigarLibrary.java:180 - Checked OS settings and found them configured for optimal performance.
+
+WARN  [OptionalTasks:1] 2017-12-05 15:47:24,257 CassandraRoleManager.java:360 - CassandraRoleManager skipped default role setup: some nodes were not ready
+
+WARN  [GossipTasks:1] 2017-12-05 15:47:25,791 FailureDetector.java:288 - Not marking nodes down due to local pause of 12370289165 > 5000000000
+
+
+
+DEBUG [MessagingService-Outgoing-/153.78.22.26-Gossip] 2017-12-05 15:47:24,298 OutboundTcpConnection.java:545 - Unable to connect to /153.78.22.26
+java.net.ConnectException: Connection refused
+
+Default commitlog_total_space_in_mb to 4G
+
+Changed to a 8G = 8192
+
+cdc_total_space_in_mb
+
+memtable_flush_writers
+
+Changed to 4 cpus
+
+# memtable_cleanup_threshold defaults to 1 / (memtable_flush_writers + 1)
+# memtable_cleanup_threshold: 0.11
+memtable_cleanup_threshold: 0.
+Uncommeted
+
+
+INFO  [main] 2017-12-06 10:33:54,488 YamlConfigurationLoader.java:89 - Configuration location: file:/etc/cassandra/default.conf/cassandra.yaml
+ERROR [main] 2017-12-06 10:33:54,555 CassandraDaemon.java:706 - Exception encountered during startup: Invalid yaml: file:/etc/cassandra/default.conf/cassandra.yaml
+ Error: while parsing a block mapping; expected <block end>, but found BlockMappingStart;  in 'reader', line 492, column 3:
+      memtable_cleanup_threshold: 0.11
+      ^
+You can tell if flushing is falling behind using the MemtablePool.BlockedOnAllocation
+# metric which should be 0, but will be non-zero if threads are blocked waiting on flushing
+# to free memor

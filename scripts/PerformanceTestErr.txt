@@ -1,0 +1,71 @@
+WARN  [main] 2017-11-30 10:07:18,058 StartupChecks.java:271 - Maximum number of memory map areas per process (vm.max_map_count) 65530 is too low, recommended value: 1048575, you can change it with sysctl.
+
+ERROR [main] 2017-11-30 10:07:18,074 CassandraDaemon.java:706 - Unable to verify sstable files on disk
+java.nio.file.AccessDeniedException: /ca-data0/lost+found
+
+
+echo 'vm.max_map_count=1048575' >> /etc/sysctl.conf
+
+Or
+
+sysctl -w vm.max_map_count=1048575
+
+sysctl -p
+
+
+
+WARN  [main] 2017-12-05 15:10:38,857 DatabaseDescriptor.java:470 - Small commitlog volume detected at /var/lib/cassandra/commitlog; setting commitlog_total_space_in_mb to 7554.  You can override this in cassandra.yaml
+WARN  [main] 2017-12-05 15:10:38,858 DatabaseDescriptor.java:497 - Small cdc volume detected at /cdc_raw; setting cdc_total_space_in_mb to 3777.  You can override this in cassandra.yaml
+
+
+
+{"errorType":"com.ncr.nep.common.exception.BusinessRuntimeException","message":"Internal Server Error. Please contact administrator.","statusCode":500}
+
+
+java.net.ConnectException: Connection timed out: connect
+	at java.net.DualStackPlainSocketImpl.connect0(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(Unknown Source)
+	at java.net.AbstractPlainSocketImpl.doConnect(Unknown Source)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(Unknown Source)
+	at java.net.AbstractPlainSocketImpl.connect(Unknown Source)
+	at java.net.PlainSocketImpl.connect(Unknown Source)
+	at java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.net.Socket.connect(Unknown Source)
+	at org.apache.http.conn.scheme.PlainSocketFactory.connectSocket(PlainSocketFactory.java:121)
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:180)
+	at org.apache.jmeter.protocol.http.sampler.hc.ManagedClientConnectionImpl.open(ManagedClientConnectionImpl.java:318)
+	at org.apache.jmeter.protocol.http.sampler.MeasuringConnectionManager$MeasuredConnection.open(MeasuringConnectionManager.java:114)
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:610)
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:445)
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:835)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.apache.jmeter.protocol.http.sampler.HTTPHC4Impl.executeRequest(HTTPHC4Impl.java:654)
+	at org.apache.jmeter.protocol.http.sampler.HTTPHC4Impl.sample(HTTPHC4Impl.java:413)
+	at org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy.sample(HTTPSamplerProxy.java:74)
+	at org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase.sample(HTTPSamplerBase.java:1189)
+	at org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase.sample(HTTPSamplerBase.java:1178)
+	at org.apache.jmeter.threads.JMeterThread.executeSamplePackage(JMeterThread.java:491)
+	at org.apache.jmeter.threads.JMeterThread.processSampler(JMeterThread.java:425)
+	at org.apache.jmeter.threads.JMeterThread.run(JMeterThread.java:254)
+	at java.lang.Thread.run(Unknown Source)
+	
+	
+	WARN  [main] 2017-12-06 11:56:59,885 DatabaseDescriptor.java:570 - memtable_cleanup_threshold has been deprecated and should be removed from cassandra.yaml
+	WARN  [main] 2017-12-06 11:57:00,318 StartupChecks.java:133 - jemalloc shared library could not be preloaded to speed up memory allocations
+	WARN  [OptionalTasks:1] 2017-12-06 11:57:19,743 CassandraRoleManager.java:360 - CassandraRoleManager skipped default role setup: some nodes were not ready
+
+A server connection timeout means that a server is taking too long to reply to a data request made from another device. 
+Timeouts are not a reply message: they show up when there isn't a reply and a server request is not fulfilled in a predetermined length of time. 
+A server connection timeout error does little to tell you what went wrong or why the error happened: it just identifies that the error occurred. T
+imeout errors can happen for a number of reasons. The server, the requesting device, the network hardware and even an Internet connection can be at fault.
+
+See http://jakarta.apache.org/jmeter/usermanual/component_reference.html#HTTP_Request
+
+"Response Timeout" 
+Usually timeout indicates a problem on the server side. Few things to check:
+
+1.	Make sure that your web server and/or database are configured to accept as many as 80 concurrent connections
+2.	Monitor your server status during the load test manually or i.e. using JMeter PerfMon plugin to see whether the server is capable of bearing such load.
+3.	Try playing with ramp-up to gradually increase the load to determine the point where time outs start occuring
+4.	Alternatively you can limit requests per second via Constant Throughput Timer and increase its value to get exact maximum requests per second your application is able to handle - perhaps it'll give you some clues.
+
